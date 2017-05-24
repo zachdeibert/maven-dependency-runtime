@@ -4,9 +4,16 @@
 	<artifactId>maven-dependency-runtime</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>mavenDependencyRuntime</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/zachdeibert/maven-dependency-runtime</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<name>Maven Dependency Runtime</name>
+	<description>Adding this library to your project allows you to put just your code in a jar file, then all of the dependencies will be downloaded from Maven when they are needed at runtime.</description>
+	<scm>
+		<url>https://github.com/zachdeibert/maven-dependency-runtime.git</url>
+	</scm>
+	<issueManagement>
+		<url>https://github.com/zachdeibert/maven-dependency-runtime/issues</url>
+	</issueManagement>
 </project>
