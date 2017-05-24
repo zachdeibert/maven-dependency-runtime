@@ -23,7 +23,7 @@ public class ClassPathScanner {
 			while (entries.hasMoreElements()) {
 				String file = entries.nextElement().getName();
 				if (file.startsWith(dir) && file.length() > dir.length() + 5) {
-					file = file.substring(dir.length() + 1, file.length() - 1);
+					file = file.substring(dir.length() + 1, file.length() - (file.endsWith("/") ? 1 : 0));
 					if (!file.contains("/")) {
 						resources.add(file);
 					}
