@@ -26,8 +26,8 @@ import org.xml.sax.SAXException;
 public abstract class MavenDependencies {
 	private static final File BASE_DIR = new File(new File(System.getProperty("user.home"), ".runtime-deps"), "maven");
 	private static final DependencyScope[] DEFAULT_SCOPES = { DependencyScope.COMPILE, DependencyScope.RUNTIME };
-	private static final boolean ENABLE_LOGGING = System
-			.getProperty("com.github.zachdeibert.mavendependencyruntime.logging").equals("true");
+	private static final boolean ENABLE_LOGGING = "true"
+			.equals(System.getProperty("com.github.zachdeibert.mavendependencyruntime.logging"));
 	private static String indent = "";
 
 	private static void createBaseDir() {
