@@ -61,3 +61,10 @@ Manifest-Version: 1.0
 Main-Class: com.github.zachdeibert.mavendependencyruntime.Main
 Real-Main-Class: test.mavendependencies.App
 ```
+
+## Legal
+
+This project has the MIT license, so you can use the code for your project,
+regardless of what your project is or what license your project has.
+There is a copyright notice for my code embedded in the jar, so all you need to
+do is merge the jars, then you are free to distribute it.
