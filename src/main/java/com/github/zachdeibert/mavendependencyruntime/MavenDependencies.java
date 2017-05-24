@@ -68,6 +68,7 @@ public abstract class MavenDependencies {
 				for (Repository repo : repositories) {
 					try {
 						repo.setVersion(dependency);
+						e = null;
 						break;
 					} catch (IOException ex) {
 						if (e == null) {
@@ -109,6 +110,7 @@ public abstract class MavenDependencies {
 					if (pom.exists()) {
 						downloaded.addAll(download(pom.toURI().toURL()));
 					}
+					e = null;
 					break;
 				} catch (IOException ex) {
 					if (e == null) {
@@ -146,7 +148,6 @@ public abstract class MavenDependencies {
 		scopeSet.addAll(Arrays.asList(scopes));
 		NodeList nodes = pom.getDocumentElement().getChildNodes();
 		repos.add(new Repository());
-		repos.add(new CommonOverrides());
 		try {
 			for (int i = 0; i < nodes.getLength(); ++i) {
 				Node node = nodes.item(i);
@@ -162,6 +163,7 @@ public abstract class MavenDependencies {
 		} catch (ParseException ex) {
 			throw new IOException("Unable to parse repositories", ex);
 		}
+		repos.add(new CommonOverrides());
 		nodes = pom.getElementsByTagName("dependency");
 		try {
 			for (int i = 0; i < nodes.getLength(); ++i) {

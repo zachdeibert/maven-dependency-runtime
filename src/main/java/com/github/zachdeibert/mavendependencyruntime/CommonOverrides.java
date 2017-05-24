@@ -6,11 +6,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 final class CommonOverrides extends Repository {
-	private static final String[] DEPENDENCY_OVERRIDES = new String[] { "org.skife.kasparov:csv:1.0" };
-	private static final String[] OVERRIDDEN_URLS = new String[] { "http://kasparov.skife.org/csv/csv-1.0.jar" };
+	private static String[] DEPENDENCY_OVERRIDES = null;
+	private static String[] OVERRIDDEN_URLS = null;
+
+	private static String[] load(String resource) throws IOException {
+		InputStream stream = CommonOverrides.class.getResourceAsStream(resource);
+		Scanner scan = new Scanner(stream);
+		List<String> lines = new ArrayList<String>();
+		while (scan.hasNext()) {
+			lines.add(scan.nextLine());
+			System.out.println(lines.get(lines.size() - 1));
+		}
+		scan.close();
+		stream.close();
+		return lines.toArray(new String[0]);
+	}
+
+	private static void init() throws IOException {
+		if (DEPENDENCY_OVERRIDES == null) {
+			DEPENDENCY_OVERRIDES = load("overrides.deps");
+		}
+		if (OVERRIDDEN_URLS == null) {
+			OVERRIDDEN_URLS = load("overrides.urls");
+		}
+	}
 
 	@Override
 	public String getUrl() {
@@ -20,6 +45,7 @@ final class CommonOverrides extends Repository {
 	@Override
 	public void download(Dependency dep, File out) throws IOException {
 		if (out.getName().endsWith(".jar")) {
+			init();
 			int index = Arrays.binarySearch(DEPENDENCY_OVERRIDES, dep.toString());
 			if (index < 0) {
 				throw new IOException("Unable to find override");
