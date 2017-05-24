@@ -4,8 +4,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Represents a version parsed into its components
+ * 
+ * @author Zach Deibert
+ * @since 1.0.0
+ */
 public class Version implements Comparable<Version> {
+	/**
+	 * A list of the components of the version
+	 * 
+	 * @since 1.0.0
+	 */
 	private final List<Integer> parts;
+	/**
+	 * The version as a string
+	 * 
+	 * @since 1.0.0
+	 */
 	private final String version;
 
 	public int compareTo(Version o) {
@@ -25,6 +41,13 @@ public class Version implements Comparable<Version> {
 		return version;
 	}
 
+	/**
+	 * Creates a new version
+	 * 
+	 * @param version
+	 *            The version string to parse
+	 * @since 1.0.0
+	 */
 	public Version(String version) {
 		parts = new ArrayList<Integer>();
 		for (String part : version.split("[^0-9]")) {

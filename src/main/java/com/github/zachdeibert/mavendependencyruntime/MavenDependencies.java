@@ -23,18 +23,59 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * The class that contains all of the methods needed for downloading and
+ * injecting dependencies into the classpath.
+ * 
+ * @author Zach Deibert
+ * @since 1.0.0
+ */
 public abstract class MavenDependencies {
+	/**
+	 * The directory to download and store artifacts in
+	 * 
+	 * @since 1.0.0
+	 */
 	private static final File BASE_DIR = new File(new File(System.getProperty("user.home"), ".runtime-deps"), "maven");
+	/**
+	 * The scopes to download dependencies for by default
+	 * 
+	 * @since 1.0.0
+	 */
 	private static final DependencyScope[] DEFAULT_SCOPES = { DependencyScope.COMPILE, DependencyScope.RUNTIME };
+	/**
+	 * If debugging information should be logged to {@link System#out}
+	 * 
+	 * @since 1.0.0
+	 */
 	private static final boolean ENABLE_LOGGING = "true"
 			.equals(System.getProperty("com.github.zachdeibert.mavendependencyruntime.logging"));
+	/**
+	 * The current indentation for debug logging
+	 * 
+	 * @since 1.0.0
+	 */
 	private static String indent = "";
 
+	/**
+	 * Makes sure that the {@link MavenDependencies#BASE_DIR} exists
+	 * 
+	 * @since 1.0.0
+	 */
 	private static void createBaseDir() {
 		BASE_DIR.mkdirs();
 		// TODO make it hidden
 	}
 
+	/**
+	 * Injects a set of dependencies into the classpath
+	 * 
+	 * @param dependencies
+	 *            The dependencies to inject
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static void injectClasspath(Set<Dependency> dependencies) throws IOException {
 		ClassLoader genericLoader = ClassLoader.getSystemClassLoader();
 		if (genericLoader instanceof URLClassLoader) {
@@ -53,6 +94,19 @@ public abstract class MavenDependencies {
 		}
 	}
 
+	/**
+	 * Downloads a dependency along with all of its dependencies and stores them
+	 * in the {@link MavenDependencies#BASE_DIR}.
+	 * 
+	 * @param repositories
+	 *            The list of repositories to try to download from
+	 * @param dependency
+	 *            The dependency to download
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(List<Repository> repositories, Dependency dependency) throws IOException {
 		if (dependency.getGroupId().equals("com.github.zachdeibert")
 				&& dependency.getArtifactId().equals("maven-dependency-runtime")) {
@@ -130,6 +184,19 @@ public abstract class MavenDependencies {
 		}
 	}
 
+	/**
+	 * Downloads a list of dependencies along with all of their dependencies and
+	 * stores them in the {@link MavenDependencies#BASE_DIR}.
+	 * 
+	 * @param repositories
+	 *            The list of repositories to try to download from
+	 * @param dependencies
+	 *            The list of dependencies to download
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(List<Repository> repositories, List<Dependency> dependencies)
 			throws IOException {
 		createBaseDir();
@@ -141,6 +208,18 @@ public abstract class MavenDependencies {
 		return downloaded;
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom
+	 * 
+	 * @param pom
+	 *            The parsed pom file
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(Document pom, DependencyScope... scopes) throws IOException {
 		List<Repository> repos = new ArrayList<Repository>();
 		List<Dependency> deps = new ArrayList<Dependency>();
@@ -178,10 +257,34 @@ public abstract class MavenDependencies {
 		return download(repos, deps);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom for the default
+	 * scopes
+	 * 
+	 * @param pom
+	 *            The parsed pom file
+	 * @return The set of all dependencies that were downloaded
+	 * @see MavenDependencies#DEFAULT_SCOPES
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(Document pom) throws IOException {
 		return download(pom, DEFAULT_SCOPES);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom
+	 * 
+	 * @param pom
+	 *            The stream containing the pom file
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(InputStream pom, DependencyScope... scopes) throws IOException {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -195,10 +298,34 @@ public abstract class MavenDependencies {
 		}
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom for the default
+	 * scopes
+	 * 
+	 * @param pom
+	 *            The stream containing the pom file
+	 * @return The set of all dependencies that were downloaded
+	 * @see MavenDependencies#DEFAULT_SCOPES
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(InputStream pom) throws IOException {
 		return download(pom, DEFAULT_SCOPES);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom
+	 * 
+	 * @param pomPath
+	 *            The url to the pom
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(URL pomPath, DependencyScope... scopes) throws IOException {
 		InputStream pom = pomPath.openStream();
 		Set<Dependency> downloaded = download(pom, scopes);
@@ -206,27 +333,102 @@ public abstract class MavenDependencies {
 		return downloaded;
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom for the default
+	 * scopes
+	 * 
+	 * @param pomPath
+	 *            The url to the pom
+	 * @return The set of all dependencies that were downloaded
+	 * @see MavenDependencies#DEFAULT_SCOPES
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(URL pomPath) throws IOException {
 		return download(pomPath, DEFAULT_SCOPES);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom
+	 * 
+	 * @param pomPath
+	 *            The path to the pom in the classpath
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(String pomPath, DependencyScope... scopes) throws IOException {
 		return download(ClassLoader.getSystemResource(pomPath), scopes);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom for the default
+	 * scopes
+	 * 
+	 * @param pomPath
+	 *            The path to the pom in the classpath
+	 * @return The set of all dependencies that were downloaded
+	 * @see MavenDependencies#DEFAULT_SCOPES
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(String pomPath) throws IOException {
 		return download(pomPath, DEFAULT_SCOPES);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom
+	 * 
+	 * @param groupId
+	 *            The group ID of the artifact to download dependencies for
+	 * @param artifactId
+	 *            The artifact ID to download dependencies for
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(String groupId, String artifactId, DependencyScope... scopes)
 			throws IOException {
 		return download(String.format("META-INF/maven/%s/%s/pom.xml", groupId, artifactId), scopes);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in the pom for the default
+	 * scopes
+	 * 
+	 * @param groupId
+	 *            The group ID of the artifact to download dependencies for
+	 * @param artifactId
+	 *            The artifact ID to download dependencies for
+	 * @return The set of all dependencies that were downloaded
+	 * @see MavenDependencies#DEFAULT_SCOPES
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(String groupId, String artifactId) throws IOException {
 		return download(groupId, artifactId, DEFAULT_SCOPES);
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in all poms contained inside
+	 * the manifest in the current classpath
+	 * 
+	 * @param scopes
+	 *            The scopes to download for
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download(DependencyScope... scopes) throws IOException {
 		Set<Dependency> deps = new HashSet<Dependency>();
 		for (String group : ClassPathScanner.listSystemResources("META-INF/maven")) {
@@ -237,6 +439,15 @@ public abstract class MavenDependencies {
 		return deps;
 	}
 
+	/**
+	 * Downloads all of the dependencies specified in all poms contained inside
+	 * the manifest in the current classpath for the default scopes
+	 * 
+	 * @return The set of all dependencies that were downloaded
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static Set<Dependency> download() throws IOException {
 		return download(DEFAULT_SCOPES);
 	}

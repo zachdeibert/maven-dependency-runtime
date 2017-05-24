@@ -12,7 +12,25 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+/**
+ * A class that scans through the classpath for certain files
+ * 
+ * @author Zach Deibert
+ * @since 1.0.0
+ */
 public class ClassPathScanner {
+	/**
+	 * Finds a list of resources that are in a specified folder in the classpath
+	 * 
+	 * @param dir
+	 *            The folder to search in
+	 * @param cl
+	 *            The {@link ClassLoader} to use the classpath of
+	 * @return An array of the resources that were found
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static String[] listResources(String dir, ClassLoader cl) throws IOException {
 		URL dirUrl = cl.getResource(dir);
 		if (dirUrl.getProtocol().equals("jar")) {
@@ -40,6 +58,17 @@ public class ClassPathScanner {
 		}
 	}
 
+	/**
+	 * Finds a list of resources that are in a specified folder in the system
+	 * classpath
+	 * 
+	 * @param dir
+	 *            The folder to search in
+	 * @return An array of the resources that were found
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	public static String[] listSystemResources(String dir) throws IOException {
 		return listResources(dir, ClassLoader.getSystemClassLoader());
 	}

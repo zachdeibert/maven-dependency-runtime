@@ -4,13 +4,39 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Scanner;
 
+/**
+ * The main class for when the dependency resolution is being run automatically
+ * 
+ * @author Zach Deibert
+ * @since 1.0.0
+ */
 class Main {
+	/**
+	 * Calls another main class
+	 * 
+	 * @param mainCls
+	 *            The fully qualified name of the other main class
+	 * @param args
+	 *            The command line parameters to this application
+	 * @since 1.0.0
+	 * @throws Exception
+	 *             If an error occurs
+	 */
 	private static void execMain(String mainCls, String[] args) throws Exception {
 		Class<?> cls = Class.forName(mainCls);
 		Method main = cls.getMethod("main", String[].class);
 		main.invoke(null, (Object) args);
 	}
 
+	/**
+	 * Sets up the environment for the program that is being run
+	 * 
+	 * @param args
+	 *            The command line parameters to this application
+	 * @since 1.0.0
+	 * @throws Exception
+	 *             If an error occurs
+	 */
 	public static void main(String[] args) throws Exception {
 		for (String premain : ClassPathScanner
 				.listSystemResources("com/github/zachdeibert/mavendependencyruntime/premains")) {

@@ -11,23 +11,62 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * A repository that has some overrides for common artifacts that cannot be
+ * found in the Maven repositories
+ * 
+ * @author Zach Deibert
+ * @since 1.0.0
+ */
 final class CommonOverrides extends Repository {
+	/**
+	 * A list of the artifact names that can be overridden (sorted
+	 * alphabetically)
+	 * 
+	 * @see CommonOverrides#OVERRIDDEN_URLS
+	 * @since 1.0.0
+	 */
 	private static String[] DEPENDENCY_OVERRIDES = null;
+	/**
+	 * A list of the urls from which to download the artifacts that this
+	 * repository resolves (sorted in the same order as the
+	 * {@link CommonOverrides#DEPENDENCY_OVERRIDES}
+	 * 
+	 * @see CommonOverrides#DEPENDENCY_OVERRIDES
+	 * @since 1.0.0
+	 */
 	private static String[] OVERRIDDEN_URLS = null;
 
+	/**
+	 * Reads a file and returns all of the lines of text contained in that file
+	 * 
+	 * @param resource
+	 *            The name of the file resource, relative to this class
+	 * @return The array of lines in the file
+	 * @since 1.0.0
+	 * @throws IOException
+	 *             If an I/O error has occurred
+	 */
 	private static String[] load(String resource) throws IOException {
 		InputStream stream = CommonOverrides.class.getResourceAsStream(resource);
 		Scanner scan = new Scanner(stream);
 		List<String> lines = new ArrayList<String>();
 		while (scan.hasNext()) {
 			lines.add(scan.nextLine());
-			System.out.println(lines.get(lines.size() - 1));
 		}
 		scan.close();
 		stream.close();
 		return lines.toArray(new String[0]);
 	}
 
+	/**
+	 * Loads the arrays from the files in the classpath
+	 * 
+	 * @see CommonOverrides#DEPENDENCY_OVERRIDES
+	 * @see CommonOverrides#OVERRIDDEN_URLS
+	 * @since 1.0.0
+	 * @throws IOException
+	 */
 	private static void init() throws IOException {
 		if (DEPENDENCY_OVERRIDES == null) {
 			DEPENDENCY_OVERRIDES = load("overrides.deps");
