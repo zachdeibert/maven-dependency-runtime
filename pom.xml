@@ -11,9 +11,23 @@
 	<name>Maven Dependency Runtime</name>
 	<description>Adding this library to your project allows you to put just your code in a jar file, then all of the dependencies will be downloaded from Maven when they are needed at runtime.</description>
 	<scm>
-		<url>https://github.com/zachdeibert/maven-dependency-runtime.git</url>
+		<connection>scm:git:git://github.com/zachdeibert/maven-dependency-runtime.git</connection>
+		<developerConnection>scm:git:ssh://github.com:zachdeibert/maven-dependency-runtime.git</developerConnection>
+		<url>https://github.com/zachdeibert/maven-dependency-runtime/tree/master</url>
 	</scm>
 	<issueManagement>
 		<url>https://github.com/zachdeibert/maven-dependency-runtime/issues</url>
 	</issueManagement>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/zachdeibert/maven-dependency-runtime/blob/master/LICENSE</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Zach Deibert</name>
+			<email>zachdeibert@gmail.com</email>
+		</developer>
+	</developers>
 </project>
