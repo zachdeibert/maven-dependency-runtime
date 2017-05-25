@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,7 +31,7 @@ import org.xml.sax.SAXException;
  * @author Zach Deibert
  * @since 1.0.0
  */
-public abstract class MavenDependencies {
+public abstract class MavenDependencies extends AbstractXmlParser {
 	/**
 	 * The directory to download and store artifacts in
 	 * 
@@ -51,11 +52,24 @@ public abstract class MavenDependencies {
 	private static final boolean ENABLE_LOGGING = "true"
 			.equals(System.getProperty("com.github.zachdeibert.mavendependencyruntime.logging"));
 	/**
+	 * A set of all of the dependencies that have already been injected into the
+	 * classpath, so they should not be reinjected (to prevent cyclic
+	 * dependencies from freezing the code in a loop)
+	 * 
+	 * @since 1.0.0
+	 */
+	private static final Set<Dependency> INJECTED_DEPENDENCIES = new HashSet<Dependency>();
+	/**
 	 * The current indentation for debug logging
 	 * 
 	 * @since 1.0.0
 	 */
 	private static String indent = "";
+
+	static {
+		INJECTED_DEPENDENCIES.add(new Dependency("com.github.zachdeibert", "maven-dependency-runtime", "1.0.0-SNAPSHOT",
+				DependencyScope.PROVIDED));
+	}
 
 	/**
 	 * Makes sure that the {@link MavenDependencies#BASE_DIR} exists
@@ -84,7 +98,10 @@ public abstract class MavenDependencies {
 				Method addUrl = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
 				addUrl.setAccessible(true);
 				for (Dependency dep : dependencies) {
-					addUrl.invoke(urlLoader, dep.getFile(BASE_DIR, "jar").toURI().toURL());
+					File file = dep.getFile(BASE_DIR, "jar");
+					if (file.exists()) {
+						addUrl.invoke(urlLoader, file.toURI().toURL());
+					}
 				}
 			} catch (ReflectiveOperationException ex) {
 				throw new IOException("Unable to inject the classpath", ex);
@@ -108,8 +125,7 @@ public abstract class MavenDependencies {
 	 *             If an I/O error has occurred
 	 */
 	public static Set<Dependency> download(List<Repository> repositories, Dependency dependency) throws IOException {
-		if (dependency.getGroupId().equals("com.github.zachdeibert")
-				&& dependency.getArtifactId().equals("maven-dependency-runtime")) {
+		if (INJECTED_DEPENDENCIES.contains(dependency)) {
 			return new HashSet<Dependency>();
 		}
 		if (ENABLE_LOGGING) {
@@ -150,6 +166,7 @@ public abstract class MavenDependencies {
 			Set<Dependency> downloaded = new HashSet<Dependency>();
 			downloaded.add(dependency);
 			if (jar.exists()) {
+				INJECTED_DEPENDENCIES.add(dependency);
 				if (pom.exists()) {
 					downloaded.addAll(download(pom.toURI().toURL()));
 				}
@@ -160,7 +177,34 @@ public abstract class MavenDependencies {
 			for (Repository repo : repositories) {
 				try {
 					repo.download(dependency, pom);
-					repo.download(dependency, jar);
+					try {
+						repo.download(dependency, jar);
+					} catch (IOException exception) {
+						try {
+							DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+							DocumentBuilder builder = factory.newDocumentBuilder();
+							Document xml = builder.parse(pom);
+							try {
+								if (find("packaging", xml.getDocumentElement(), "pom").equals("jar")) {
+									throw exception;
+								}
+							} catch (ParseException ex) {
+								ex.addSuppressed(exception);
+								throw new IOException("Unable to find packaging information in pom.xml", ex);
+							}
+						} catch (ParserConfigurationException ex) {
+							ex.addSuppressed(exception);
+							throw new IOException("Unable to load pom.xml parser", ex);
+						} catch (SAXException ex) {
+							ex.addSuppressed(exception);
+							throw new IOException("Unable to parse pom.xml", ex);
+						} catch (IOException ex) {
+							if (ex != exception) {
+								ex.addSuppressed(exception);
+							}
+							throw ex;
+						}
+					}
 					if (pom.exists()) {
 						downloaded.addAll(download(pom.toURI().toURL()));
 					}
@@ -241,6 +285,17 @@ public abstract class MavenDependencies {
 			}
 		} catch (ParseException ex) {
 			throw new IOException("Unable to parse repositories", ex);
+		}
+		try {
+			InputStream stream = MavenDependencies.class.getResourceAsStream("overrides.repos");
+			Scanner scan = new Scanner(stream);
+			while (scan.hasNext()) {
+				repos.add(new Repository(scan.nextLine()));
+			}
+			scan.close();
+			stream.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 		repos.add(new CommonOverrides());
 		nodes = pom.getElementsByTagName("dependency");

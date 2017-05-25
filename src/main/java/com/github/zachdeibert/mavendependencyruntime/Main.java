@@ -25,6 +25,7 @@ class Main {
 	private static void execMain(String mainCls, String[] args) throws Exception {
 		Class<?> cls = Class.forName(mainCls);
 		Method main = cls.getMethod("main", String[].class);
+		main.setAccessible(true);
 		main.invoke(null, (Object) args);
 	}
 

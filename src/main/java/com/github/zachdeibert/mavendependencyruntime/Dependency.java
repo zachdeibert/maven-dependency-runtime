@@ -110,6 +110,9 @@ public class Dependency extends AbstractXmlParser {
 		}
 		dir = new File(dir, getArtifactId());
 		String[] strs = dir.list();
+		if (strs == null) {
+			return new Version[0];
+		}
 		Version[] vers = new Version[strs.length];
 		for (int i = 0; i < strs.length; ++i) {
 			vers[i] = new Version(strs[i]);
@@ -153,6 +156,52 @@ public class Dependency extends AbstractXmlParser {
 		return String.format("%s:%s:%s", groupId, artifactId, version);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		result = prime * result + ((artifactId == null) ? 0 : artifactId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Dependency)) {
+			return false;
+		}
+		Dependency other = (Dependency) obj;
+		if (groupId == null) {
+			if (other.groupId != null) {
+				return false;
+			}
+		} else if (!groupId.equals(other.groupId)) {
+			return false;
+		}
+		if (artifactId == null) {
+			if (other.artifactId != null) {
+				return false;
+			}
+		} else if (!artifactId.equals(other.artifactId)) {
+			return false;
+		}
+		if (version == LATEST_VERSION || other.version == LATEST_VERSION) {
+		} else if (version == null) {
+			if (other.version != null) {
+				return false;
+			}
+		} else if (!version.equals(other.version)) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Creates a new dependency
 	 * 
@@ -169,11 +218,8 @@ public class Dependency extends AbstractXmlParser {
 	public Dependency(String groupId, String artifactId, String version, DependencyScope scope) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
-		this.version = version.contains("$") ? LATEST_VERSION : version; // TODO
-																			// Make
-																			// it
-																			// support
-																			// variables
+		this.version = version.contains("$") || version.contains("[") || version.contains("(") ? LATEST_VERSION
+				: version; // TODO Make if support variables and ranges
 		this.scope = scope;
 	}
 

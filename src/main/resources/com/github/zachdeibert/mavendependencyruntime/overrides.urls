@@ -1,1 +1,9 @@
+http://repository.ops4j.org/maven2/com/ibm/icu/3.4.5/icu-3.4.5.jar
+http://repository.ops4j.org/maven2/com/ibm/icu/3.4.5/icu-3.4.5.jar
+http://central.maven.org/maven2/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar
+http://central.maven.org/maven2/javax/inject/javax.inject/1/javax.inject-1.jar
+2.3.0
+
 http://kasparov.skife.org/csv/csv-1.0.jar
+http://central.maven.org/maven2/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar
+http://central.maven.org/maven2/xml-apis/xml-apis/2.0.2/xml-apis-2.0.2.jar

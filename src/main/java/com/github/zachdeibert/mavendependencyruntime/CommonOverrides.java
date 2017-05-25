@@ -89,20 +89,30 @@ final class CommonOverrides extends Repository {
 			if (index < 0) {
 				throw new IOException("Unable to find override");
 			} else {
-				URL url = new URL(OVERRIDDEN_URLS[index]);
-				InputStream ins = url.openStream();
-				OutputStream outs = new FileOutputStream(out);
-				byte[] buffer = new byte[4096];
-				for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
-					;
-				outs.close();
-				ins.close();
+				String override = OVERRIDDEN_URLS[index];
+				if (!override.isEmpty()) {
+					URL url = new URL(override);
+					InputStream ins = url.openStream();
+					OutputStream outs = new FileOutputStream(out);
+					byte[] buffer = new byte[4096];
+					for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
+						;
+					outs.close();
+					ins.close();
+				}
 			}
 		}
 	}
 
 	@Override
 	public void setVersion(Dependency dep) throws IOException {
-		throw new IOException("Not supported by this repository");
+		init();
+		int index = Arrays.binarySearch(DEPENDENCY_OVERRIDES,
+				String.format("%s:%s", dep.getGroupId(), dep.getArtifactId()));
+		if (index < 0) {
+			throw new IOException("Not supported by this repository");
+		} else {
+			dep.setVersion(OVERRIDDEN_URLS[index]);
+		}
 	}
 }

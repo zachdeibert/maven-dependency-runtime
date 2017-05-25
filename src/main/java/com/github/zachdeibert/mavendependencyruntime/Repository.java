@@ -85,7 +85,7 @@ public class Repository extends AbstractXmlParser {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputStream ins = url.openStream();
 			Document doc = builder.parse(ins);
-			dep.setVersion(find("release", doc.getDocumentElement(), null));
+			dep.setVersion(find("release", doc.getDocumentElement(), find("version", doc.getDocumentElement(), null)));
 		} catch (IOException ex) {
 			throw ex;
 		} catch (RuntimeException ex) {

@@ -1,1 +1,9 @@
+com.ibm:icu:icu4j
+com.ibm:icu:latest
+javax:annotation:1.1.0
+javax:inject:1.0.0
+net.sf.kxml:kxml2-min
+org.eclipse.perfmsr:core:1.0.0
 org.skife.kasparov:csv:1.0
+xerces:xerces-impl:2.6.2
+xml-apis:xml-apis:2.6.2
