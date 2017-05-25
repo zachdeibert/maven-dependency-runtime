@@ -14,6 +14,12 @@ needed at runtime.
 4. Distribute the merged jar, and it will automatically download the
    dependencies for you!
 
+*OR*
+
+1. Install my [Maven plugin](
+       https://github.com/zachdeibert/dependency-runtime-maven-plugin#usage)
+   that does all of that for you.
+
 ## Example Code
 
 #### test/mavendependencies/App.java
